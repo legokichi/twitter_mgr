@@ -17,11 +17,39 @@ def get_api(jso):
     print "api", api
     return api
 
+
+def limit_handled(cursor):
+    while True:
+        try:
+            yield cursor.next()
+        except tweepy.RateLimitError:
+            time.sleep(15 * 60)
+
+
+def showRecur(obj, i=2):
+    if i == 0: return
+    for prop, val in vars(obj).iteritems():
+        if(not hasattr(val, '__dict__')):
+            print prop, ": ", val
+        else:
+            print prop, ">>>"
+            showRecur(val,i-1)
+            print "<<<", prop
+
+def removeCRLF(text):
+    return text.replace('\n', ' ').replace('\r', '')
+
+
 obj = read_json_file("./key_dxcknd.json")
 api = get_api(obj)
-user_timeline = api.user_timeline(obj["OWNER"])
-print type(user_timeline)
-status = user_timeline[0]
-user = status.author
-print user.name, user.screen_name, status.text
+
+for status in limit_handled(tweepy.Cursor(api.user_timeline, obj["OWNER"]).items(10)):
+    if  hasattr(status, 'retweeted_status'):
+        status = status.retweeted_status
+    #showRecur(status)
+    user = status.author
+    print str(status.id)+"\t"+user.name+"\t"+user.screen_name+"\t"+removeCRLF(status.text)
+
 print "ok"
+
+
