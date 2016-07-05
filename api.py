@@ -11,12 +11,12 @@ def read_json_file(file_name):
         return jso
 
 def get_api(jso):
-    print "jso", jso
+    #print "jso", jso
     auth = tweepy.OAuthHandler(jso["CONSUMER_KEY"], jso["CONSUMER_SECRET"])
     auth.set_access_token(jso["ACCESS_TOKEN"], jso["ACCESS_SECRET"])
-    print "auth", auth
+    #print "auth", auth
     api = tweepy.API(auth)
-    print "api", api
+    #print "api", api
     return api
 
 
