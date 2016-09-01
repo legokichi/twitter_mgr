@@ -16,12 +16,12 @@ Example:
     exit()
 
 
-def remove_status(author, id, myname):
+def remove_status(author, id, myname, per):
     if author != myname:
-        print "unretweet", author, id
+        print "unretweet", author, id, per
         status = api.unretweet(id)
     else:
-        print "destroy_status", author, id
+        print "destroy_status", author, id, per
         status = api.destroy_status(id)
     return status
 
@@ -29,11 +29,11 @@ def remove_status(author, id, myname):
 obj = read_json_file(param[1])
 api = get_api(obj)
 dels = read_tsv_file(param[2])
-for _del in dels:
+for i, _del in enumerate(dels):
     id = _del[0]
     author = _del[2]
     try:
-        status = remove_status(author, id, obj["OWNER"])
+        status = remove_status(author, id, obj["OWNER"], (i+1)/float(len(dels)))
     except tweepy.error.TweepError as err:
         print err
     #showRecur(status)
